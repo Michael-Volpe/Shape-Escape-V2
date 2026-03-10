@@ -34,8 +34,8 @@ let isClipped = false;
 let targetToggle = 0; 
 let ballisticToggle = 0;
 
-let p1 = { top: 250, left: 180, vY: 0, grounded: false, score: 0, dead: false, element: character, id: 'p1', color: '#ff4444', isCrouching: false, name: "Circle", shape: "50%" };
-let p2 = { top: 250, left: 240, vY: 0, grounded: false, score: 0, dead: false, element: null, id: 'p2', active: false, color: '#4444ff', isCrouching: false, name: "Square", shape: "0%" };
+let p1 = { top: 250, left: 180, vY: 0, grounded: false, score: 0, dead: false, element: character, id: 'p1', color: '#ff4444', isCrouching: false, name: "Circle", shape: "50%", reviveProgress: 0, isInvulnerable: false };
+let p2 = { top: 250, left: 240, vY: 0, grounded: false, score: 0, dead: false, element: null, id: 'p2', active: false, color: '#4444ff', isCrouching: false, name: "Square", shape: "0%", reviveProgress: 0, isInvulnerable: false };
 
 let keys = {};
 
@@ -322,7 +322,7 @@ function update() {
 
     if (!isClipped && !gracePeriod) {
         [p1, p2].forEach(p => { 
-            if ((p.active || p === p1) && !p.dead) {
+            if ((p.active || p === p1) && !p.dead && !p.isInvulnerable) {
                 if (level >= 10) {
                     if (p.top < 80 || (floorCollapsed && p.top > 450)) {
                         p.element.style.opacity = Math.random() > 0.4 ? "1" : "0.3";
@@ -493,7 +493,7 @@ function handlePlatforms(mod) {
         b.style.top = h.style.top = top + "px";
         if (!isClipped) {
             [p1, p2].forEach(p => {
-                if (p.active || p === p1) {
+                if ((p.active || p === p1) && !p.dead) {
                     let hL = parseFloat(h.style.left) + drift, hW = parseFloat(h.style.width);
                     let inHole = p.left > hL && p.left + size < hL + hW;
                     if (!inHole && p.top + size > top && p.top + size < top + 20 && p.vY >= 0) {
@@ -511,7 +511,10 @@ function handlePlatforms(mod) {
                 }
             }
         });
-        if (top < -60) { b.remove(); h.remove(); currentBlocks.splice(i, 1); }
+        if (top < -60) { 
+            handleReviveProgress(); // Logic for counting floors for revive
+            b.remove(); h.remove(); currentBlocks.splice(i, 1); 
+        }
     });
 }
 
@@ -536,9 +539,46 @@ function resolvePlayerCollision(a, b) {
 }
 
 function die(p) { 
-    if (p.dead || (gracePeriod && !nukeActive)) return;
+    if (p.dead || p.isInvulnerable || (gracePeriod && !nukeActive)) return;
     p.dead = true; playSound(sfxDeath); p.element.classList.add("dead"); 
-    createExplosion(p.left, p.top, p.color); 
+    createExplosion(p.left, p.top, p.color);
+    p.reviveProgress = 0; // Reset floor count on death
+}
+
+// --- NEW REVIVE FUNCTIONS ---
+function handleReviveProgress() {
+    if (p1.dead && p2.active && !p2.dead) {
+        p1.reviveProgress++;
+        if (p1.reviveProgress >= 20) { p1.reviveProgress = -999; triggerRespawn(p1); }
+    }
+    if (p2.active && p2.dead && !p1.dead) {
+        p2.reviveProgress++;
+        if (p2.reviveProgress >= 20) { p2.reviveProgress = -999; triggerRespawn(p2); }
+    }
+}
+
+function triggerRespawn(p) {
+    let count = 3;
+    const msg = document.createElement("div");
+    msg.style.cssText = `position:absolute; width:100%; top:40%; text-align:center; font-size:30px; color:${p.color}; font-weight:bold; z-index:2000; text-shadow:2px 2px 5px #000; font-family: sans-serif;`;
+    game.appendChild(msg);
+
+    const timer = setInterval(() => {
+        msg.innerText = `RESPAWNING ${p.name.toUpperCase()}\n${count}...`;
+        count--;
+        if (count < 0) {
+            clearInterval(timer);
+            msg.remove();
+            p.dead = false;
+            p.reviveProgress = 0;
+            p.isInvulnerable = true;
+            p.top = 100; p.vY = 0;
+            p.element.classList.remove("dead");
+            p.element.style.opacity = "0.5";
+            // 3 second grace period
+            setTimeout(() => { p.isInvulnerable = false; p.element.style.opacity = "1"; }, 3000);
+        }
+    }, 1000);
 }
 
 function createExplosion(x, y, c) {
