@@ -108,7 +108,10 @@ body {
     position: relative; 
     width: 450px; 
     box-sizing: border-box;
+    /* FIX: Match the bottom rounding of the menu */
     border: 2px solid #444; 
+    border-top: none; /* Prevents double-border between UI and Game */
+    border-radius: 0 0 12px 12px; 
 }
 
 #game { 
@@ -118,6 +121,8 @@ body {
     position: relative; 
     overflow: hidden; 
     transition: background 0.5s, transform 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);    
+    /* FIX: Ensure content doesn't bleed out of rounded corners */
+    border-radius: 0 0 10px 10px; 
 }
 
 /* --- CHARACTERS --- */
@@ -190,6 +195,7 @@ body {
 }
 
 /* --- MENUS (Main Menu & Game Over) --- */
+/* --- MENUS (Main Menu & Game Over) --- */
 #menu, #gameOver {
     position: absolute; 
     inset: 0; 
@@ -203,6 +209,10 @@ body {
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    
+    /* FIX: Match the parent width exactly and fix bottom corners */
+    width: 100% !important; 
+    border-radius: 0 0 12px 12px !important;
 }
 
 #menu h1 {
