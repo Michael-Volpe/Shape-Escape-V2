@@ -47,7 +47,7 @@ const CRATES = [
     },
     { 
         id: 'c3', name: 'Rare Crate', price: 1000, rarity: 'rare', 
-        weights: { common: 10, uncommon: 25, rare: 55, legendary: 10 } 
+        weights: { common: 10, uncommon: 25, rare: 55, legendary: 10 } // FIXED: Changed 'rarity' to 'rare'
     },
     { 
         id: 'c4', name: 'Legendary Crate', price: 2500, rarity: 'legendary', 
@@ -90,7 +90,7 @@ function switchTab(tabId) {
     
     if(tabId === 'daily' || tabId === 'offers') handleDailyRotation();
 
-    if(event && event.currentTarget) event.currentTarget.classList.add('active');
+    if(window.event && window.event.currentTarget) window.event.currentTarget.classList.add('active');
 }
 
 // --- RENDERING ---
@@ -177,7 +177,6 @@ async function buyItem(id, price) {
     if (!username) return alert("Please log in on the main menu first!");
 
     try {
-        // --- CHECK IF ALREADY OWNED ---
         const ownedSkins = await convexClient.query("functions:getOwnedSkins", { username: username });
         if (ownedSkins.includes(id)) {
             return alert("Already Owned!");
@@ -209,6 +208,16 @@ function pickRarity(weights) {
     return 'common';
 }
 
+// Helper to get a random skin of a specific rarity with a safety fallback
+function getRandomSkinOfRarity(rarity) {
+    const pool = TOTAL_LOOT_POOL.filter(s => s.rarity === rarity);
+    if (pool.length > 0) {
+        return pool[Math.floor(Math.random() * pool.length)];
+    }
+    // Fallback if rarity pool is empty (prevents crashes)
+    return ALL_SKINS[0];
+}
+
 async function startCrateOpening(crateId) {
     const username = localStorage.getItem('gameUsername');
     if (!username) return alert("Please log in first!");
@@ -222,8 +231,7 @@ async function startCrateOpening(crateId) {
 
     // --- PRE-CALCULATE WINNER ---
     const winRarity = pickRarity(crate.weights);
-    const winSkins = TOTAL_LOOT_POOL.filter(s => s.rarity === winRarity);
-    const winner = winSkins[Math.floor(Math.random() * winSkins.length)];
+    const winner = getRandomSkinOfRarity(winRarity);
 
     const overlay = document.getElementById('crate-overlay');
     const spinner = document.getElementById('item-spinner');
@@ -240,8 +248,7 @@ async function startCrateOpening(crateId) {
     
     for (let i = 0; i < totalItems; i++) {
         const rarity = pickRarity(crate.weights);
-        const skinsOfRarity = TOTAL_LOOT_POOL.filter(s => s.rarity === rarity);
-        const randSkin = skinsOfRarity[Math.floor(Math.random() * skinsOfRarity.length)];
+        const randSkin = getRandomSkinOfRarity(rarity);
         
         const div = document.createElement('div');
         div.className = `spinner-item ${randSkin.rarity}`;
@@ -252,7 +259,8 @@ async function startCrateOpening(crateId) {
         spinner.appendChild(div);
     }
     
-    // Set the specific winner in the track
+    // Set the specific pre-calculated winner in the track at the winning index
+    spinner.children[winningIndex].className = `spinner-item ${winner.rarity}`;
     spinner.children[winningIndex].innerHTML = `
         <div class="item-preview ${winner.class}"></div>
         <div class="spinner-divider" style="position: absolute; right: -1px; width: 2px; height: 100%; background: #222;"></div>
@@ -283,7 +291,7 @@ async function startCrateOpening(crateId) {
         rewardDisplay.classList.remove('hidden');
         document.getElementById('reward-name').innerText = winner.name;
         document.getElementById('reward-preview').className = `item-preview ${winner.class}`;
-        updateBalance(); // Sync balance after deduction
+        updateBalance(); 
     }, 6500);
 }
 
@@ -292,6 +300,5 @@ function closeCrate() {
     document.getElementById('reward-display').classList.add('hidden');
     document.getElementById('item-spinner').style.transform = 'translateX(0)';
 }
-
 
 window.onload = initShop;
