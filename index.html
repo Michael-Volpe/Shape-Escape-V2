@@ -22,6 +22,10 @@
             background-color: #0a0a0a;
         }
 
+        #ui {
+            z-index: 10; /* Ensure UI stays above game elements */
+        }
+
         #game-container {
             position: relative;
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
@@ -31,9 +35,10 @@
         @keyframes pulse-red { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
         .offline-dot { width: 6px; height: 6px; background: #ff4444; border-radius: 50%; display: inline-block; margin-right: 5px; animation: pulse-red 2s infinite; }
 
-        .hidden-ui {
-            display: none !important;
-        }
+        /* Logic for hiding/showing elements based on menu state */
+        .menu-open .ingame-only { display: none !important; }
+
+        .hidden-ui { display: none !important; }
 
         .glass-btn {
             padding: 5px 12px;
@@ -48,25 +53,91 @@
             transition: 0.2s;
         }
         .glass-btn:hover { background: rgba(255,255,255,0.1); }
+
+        /* --- NEW CHARACTER SUBMENU STYLES --- */
+        .character-menu-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .submenu {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 80%;
+            margin-top: 8px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            animation: slideDown 0.25s ease-out;
+        }
+
+        .submenu-btn {
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #333;
+            color: #ccc;
+            font-family: monospace;
+            font-size: 10px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.2s;
+            text-transform: uppercase;
+        }
+
+        .submenu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ff4444;
+            color: #fff;
+        }
+
+        .shop-btn { border-left: 3px solid #ffeb3b; }
+        .custom-btn { border-left: 3px solid #4444ff; }
+
+        /* --- FIX: PREVIEW BOX VISUALS --- */
+        .preview-box {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+            background-size: cover !important;
+            background-repeat: repeat !important;
+            background-blend-mode: multiply;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
-<body>
+<body class="menu-open"> 
     <div id="ui">
         <div class="score-box">
-            <div class="label circle" id="labelP1">Circle (P1)</div>
+            <div class="label circle" id="labelP1">Guest</div>
             <div>High: <span id="highScoreP1">0</span></div>
-            <div>Score: <span id="scoreValueP1">0</span></div>
+            <div class="ingame-only">Score: <span id="scoreValueP1">0</span></div>
         </div>
         
         <div class="level-box">
-            <div>Level: <span id="levelValue">1</span></div>
-            <div><span id="timerValue">0.00</span>s</div>
+            <div class="ingame-only">
+                <div class="level-indicator">Level: <span id="levelValue">1</span></div>
+                <div class="timer-display"><span id="timerValue">0.00</span>s</div>
+            </div>
+            <div class="coin-display"><span class="coin-icon">🪙</span> <span id="coinsEarnedDisplay">0</span></div>
         </div>
 
         <div class="score-box">
-            <div class="label square" id="labelP2">Square (P2)</div>
-            <div>High: <span id="highScoreP2">0</span></div>
-            <div>Score: <span id="scoreValueP2">0</span></div>
+            <div id="p2-ui-section" class="ingame-only">
+                </div>
+            
+            <div id="bank-display">
+                <span class="bank-label">BANK</span>
+                <span id="totalCoins">0</span>
+            </div>
         </div>
     </div>
 
@@ -82,7 +153,7 @@
         <div id="online-feature-area" style="position: absolute; bottom: 12px; right: 12px; z-index: 1000; display: flex; align-items: center;">
             <div style="background: rgba(0,0,0,0.6); padding: 4px 8px; border-radius: 4px; display: flex; align-items: center; border: 1px solid #222; color: #00ff88; font-family: monospace; font-size: 9px; letter-spacing: 1px;">
                 <span style="width: 6px; height: 6px; background: #00ff88; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px #00ff88;"></span>
-                ONLINE: <span id="online-count" style="margin-left: 4px;">1</span>
+                PLAYERS: <span id="online-count" style="margin-left: 4px;">1</span>
             </div>
         </div>
 
@@ -101,7 +172,14 @@
             <div class="btn-group-vertical">
                 <button onclick="window.location.href='gamemodes/gamemodes.html'">Gamemodes</button>
                 <button class="menu-btn" onclick="window.location.href='leaderboard/leaderboard.html'">Leaderboard</button>
-                <button onclick="toggleCustomization()" class="menu-btn">Customization</button>
+                
+                <div class="character-menu-container">
+                    <button id="characterBtn" class="menu-btn" onclick="toggleCharacterSubmenu()">Character</button>
+                    <div id="characterSubmenu" class="submenu hidden">
+                        <button class="submenu-btn shop-btn" onclick="window.location.href='shop/shop.html'">🛒 Shop</button>
+                        <button class="submenu-btn custom-btn" onclick="toggleCustomization()">🎨 Customization</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -124,10 +202,14 @@
                                 <option value="50%">Circle</option>
                                 <option value="0%">Square</option>
                                 <option value="8px">Rounded</option>
-                                <option value="triangle">Triangle</option>
-                                <option value="diamond">Diamond</option>
-                                <option value="hexagon">Hexagon</option>
+                                <option value="shape-triangle">Triangle</option>
+                                <option value="shape-diamond">Diamond</option>
+                                <option value="shape-hexagon">Hexagon</option>
                             </select>
+                            <label>SKIN</label>
+                            <select id="p1Skin" onchange="updateCustoms()">
+                                <option value="">None</option>
+                                </select>
                         </div>
                     </div>
                     <div class="player-col">
@@ -145,9 +227,13 @@
                                 <option value="0%">Square</option>
                                 <option value="50%">Circle</option>
                                 <option value="8px">Rounded</option>
-                                <option value="triangle">Triangle</option>
-                                <option value="diamond">Diamond</option>
-                                <option value="hexagon">Hexagon</option>
+                                <option value="shape-triangle">Triangle</option>
+                                <option value="shape-diamond">Diamond</option>
+                                <option value="shape-hexagon">Hexagon</option>
+                            </select>
+                            <label>SKIN</label>
+                            <select id="p2Skin" onchange="updateCustoms()">
+                                <option value="">None</option>
                             </select>
                         </div>
                     </div>
@@ -168,6 +254,9 @@
                         <span id="finalP2Name">PLAYER 2</span>
                         <span id="finalP2">0</span>
                     </div>
+                </div>
+                <div id="deathCoinBonus" style="margin-top: 10px; color: #ffeb3b; font-family: monospace;">
+                     COINS EARNED: +<span id="coinsEarned">0</span>
                 </div>
                 <div class="btn-group-vertical">
                     <button onclick="restartGame()">PLAY AGAIN</button>
@@ -211,7 +300,15 @@
     <audio id="bg-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop preload="auto" crossorigin="anonymous"></audio>
 
     <script src="script.js"></script>
+    <script>
+        // Character submenu toggle script
+        function toggleCharacterSubmenu() {
+            const submenu = document.getElementById("characterSubmenu");
+            submenu.classList.toggle("hidden");
+            if (typeof playSound === 'function') {
+                playSound(document.getElementById("sfx-click"));
+            }
+        }
+    </script>
 </body>
 </html>
-
-
