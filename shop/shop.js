@@ -47,7 +47,7 @@ const CRATES = [
     },
     { 
         id: 'c3', name: 'Rare Crate', price: 1000, rarity: 'rare', 
-        weights: { common: 10, uncommon: 25, rarity: 55, legendary: 10 } 
+        weights: { common: 10, uncommon: 25, rare: 55, legendary: 10 } 
     },
     { 
         id: 'c4', name: 'Legendary Crate', price: 2500, rarity: 'legendary', 
@@ -292,5 +292,6 @@ function closeCrate() {
     document.getElementById('reward-display').classList.add('hidden');
     document.getElementById('item-spinner').style.transform = 'translateX(0)';
 }
+
 
 window.onload = initShop;
