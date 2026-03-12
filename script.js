@@ -35,8 +35,8 @@ let coinsCollected = 0;
 let totalCoins = parseInt(localStorage.getItem("totalCoins")) || 0;     
 
 // --- PHYSICS & DESIGN ---
-let platformSpeed = 2;    
-let moveSpeed = 3.5;        
+let platformSpeed = 1;    
+let moveSpeed = 3;        
 let gravity = 0.3;          
 let jumpStrength = -7.2;    
 let size = 20;
@@ -403,12 +403,33 @@ async function loadCustoms() {
     isInitialLoad = false; // Re-enable mutations for future user interactions
 }
 
+let devBuffer = "";
+const DEV_HASH = "f804ff2fd8efd8445b745ff69f4c69cfd96f6b830245296b9ef866e2edcb801f"
+async function hashText(text) {
+    const data = new TextEncoder().encode(text)
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function checkDevSpell() {
+    const hashed = await hashText(devBuffer);
+    if (hashed === DEV_HASH) {
+        abilitiesEnabled = !abilitiesEnabled;                
+        flashPlayers(); 
+        devBuffer = "";
+    }
+}
+
 document.addEventListener("keydown", (e) => {
     keys[e.code] = true;
 
-    if (keys["KeyE"] && keys["KeyZ"]) { 
-        abilitiesEnabled = !abilitiesEnabled; 
-        flashPlayers(); 
+    if (e.key.length === 1) { 
+        devBuffer += e.key.toLowerCase();
+        if (devBuffer.length > 6) {
+            devBuffer = devBuffer.slice(-6)
+        }
+        checkDevSpell();
     }
     
     if (abilitiesEnabled && gameRunning) {
@@ -843,5 +864,3 @@ window.onload = async () => {
         await startGame(parseInt(lastMode)); 
     }
 };
-
-
