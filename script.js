@@ -35,7 +35,7 @@ let coinsCollected = 0;
 let totalCoins = parseInt(localStorage.getItem("totalCoins")) || 0;     
 
 // --- PHYSICS & DESIGN ---
-let platformSpeed = 1.5;    
+let platformSpeed = 2;    
 let moveSpeed = 3.5;        
 let gravity = 0.3;          
 let jumpStrength = -7.2;    
@@ -864,4 +864,5 @@ window.onload = async () => {
         await startGame(parseInt(lastMode)); 
     }
 };
+
 
