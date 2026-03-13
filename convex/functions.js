@@ -179,6 +179,7 @@ export const getUserCoins = query({
   },
 });
 
+// MAIN GAME SCORES (Goes ONLY to 'scores')
 export const addScore = mutation({
   args: { 
     name: v.string(), 
@@ -188,7 +189,6 @@ export const addScore = mutation({
     coinsEarned: v.number() 
   },
   handler: async (ctx, args) => {
-    // 1. General High Scores Table
     await ctx.db.insert("scores", {
       name: args.name,
       score: args.score,
@@ -198,7 +198,29 @@ export const addScore = mutation({
       date: Date.now(),
     });
 
-    // 2. Meteor Dash Specific Table
+    // Update Global User Bank
+    const coinRecord = await ctx.db.query("coins")
+      .filter((q) => q.eq(q.field("username"), args.name))
+      .unique();
+
+    if (coinRecord) {
+      await ctx.db.patch(coinRecord._id, { totalCoins: coinRecord.totalCoins + args.coinsEarned });
+    } else {
+      await ctx.db.insert("coins", { username: args.name, totalCoins: args.coinsEarned });
+    }
+  },
+});
+
+// METEOR DASH SCORES (Goes ONLY to 'md_scores')
+export const addMdScore = mutation({
+  args: { 
+    name: v.string(), 
+    score: v.number(), 
+    level: v.number(), 
+    time: v.number(),
+    coinsEarned: v.number() 
+  },
+  handler: async (ctx, args) => {
     await ctx.db.insert("md_scores", {
       username: args.name,
       meteorsAvoided: args.score,
@@ -208,21 +230,15 @@ export const addScore = mutation({
       timestamp: Date.now()
     });
 
-    // 3. Update User Bank
-    const coinRecord = await ctx.db
-      .query("coins")
+    // Update Global User Bank
+    const coinRecord = await ctx.db.query("coins")
       .filter((q) => q.eq(q.field("username"), args.name))
       .unique();
 
     if (coinRecord) {
-      await ctx.db.patch(coinRecord._id, {
-        totalCoins: coinRecord.totalCoins + args.coinsEarned
-      });
+      await ctx.db.patch(coinRecord._id, { totalCoins: coinRecord.totalCoins + args.coinsEarned });
     } else {
-      await ctx.db.insert("coins", {
-        username: args.name,
-        totalCoins: args.coinsEarned
-      });
+      await ctx.db.insert("coins", { username: args.name, totalCoins: args.coinsEarned });
     }
   },
 });
