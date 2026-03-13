@@ -14,11 +14,20 @@
             <br>
             
             <div class="btn-group-vertical">
-                <button onclick="selectMode(1)">Singleplayer</button>
-                <button onclick="selectMode(2)">2 Player</button>
+                <div class="mode-section">
+                    <span class="mode-title">Freefall</span>
+                    <button onclick="selectMode('freefall', 1)">Singleplayer</button>
+                    <button onclick="selectMode('freefall', 2)">2 Player</button>
+                </div>
+
+                <div class="mode-section">
+                    <span class="mode-title">Meteor Dash</span>
+                    <button class="meteor-btn" onclick="selectMode('meteor', 1)">Singleplayer</button>
+                    
+                </div>
                 
                 <br>
-                <button class="menu-btn" onclick="window.location.href='../index.html'" style="border-color: #ff4444; color: #ff4444;">
+                <button class="menu-btn" onclick="window.location.href='../index.html'">
                     BACK TO MENU
                 </button>
             </div>
@@ -26,11 +35,16 @@
     </div>
 
     <script>
-        function selectMode(mode) {
-            // Store the choice
+        function selectMode(type, mode) {
+            sessionStorage.setItem("activeGameType", type);
             sessionStorage.setItem("lastGameMode", mode);
-            // Use ../ to redirect to the main page correctly
-            window.location.href = '../index.html';
+            
+            if (type === 'meteor') {
+                // Moving UP one level to find the meteor_dash folder
+                window.location.href = '../meteor_dash/meteor_dash.html';
+            } else {
+                window.location.href = '../index.html';
+            }
         }
     </script>
 </body>
