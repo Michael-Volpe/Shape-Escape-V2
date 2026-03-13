@@ -252,33 +252,33 @@ function updateMeteors() {
 }
 
 // --- FIXED GAME OVER & CONVEX SYNC ---
+// --- FINAL BULLETPROOF GAME OVER ---
+// --- FINAL BULLETPROOF GAME OVER ---
 async function showGameOver() {
+    if (!gameRunning) return; 
     gameRunning = false;
     cancelAnimationFrame(animationId);
     
-    // 1. Capture final states
-    const finalScore = p1.score;
-    const finalTime = timerElement.innerText; // Keep as string for display
+    // 1. CAPTURE DATA RIGHT NOW
+    const dodgedCount = p1.score; 
+    const finalTime = timerElement.innerText; 
+    const finalLevel = level;
     const user = localStorage.getItem("gameUsername") || "Guest";
 
-    // 2. UI Updates - MATCHING YOUR HTML IDs
-    // "DODGED" count
+    // 2. UI UPDATES - MATCHING THE NEW HTML IDs
     const dodgedEl = document.getElementById("finalP1");
-    if (dodgedEl) dodgedEl.innerText = finalScore;
+    if (dodgedEl) dodgedEl.innerText = dodgedCount;
     
-    // "SURVIVED" time (Matches the ⏱️ icon)
     const timeEl = document.getElementById("finalTime");
-    if (timeEl) timeEl.innerText = finalTime + "s";
+    if (timeEl) timeEl.innerText = finalTime; // HTML already provides the 's'
     
-    // "COINS" earned (Matches the 🪙 icon)
-    const coinsEl = document.getElementById("coinsEarnedDisplay"); 
+    const coinsEl = document.getElementById("coinsEarned"); 
     if (coinsEl) coinsEl.innerText = currentRunCoins;
 
-    // "LEVEL" reached (Matches the 🚀 icon)
     const levelEl = document.getElementById("finalLevel");
-    if (levelEl) levelEl.innerText = level;
+    if (levelEl) levelEl.innerText = finalLevel;
     
-    // 3. Local Backup Save
+    // 3. LOCAL STORAGE BACKUP
     const totalBank = parseInt(localStorage.getItem("totalCoins")) || 0;
     localStorage.setItem("totalCoins", totalBank + currentRunCoins);
 
@@ -286,8 +286,8 @@ async function showGameOver() {
     try {
         await convexClient.mutation("functions:addScore", {
             name: user,
-            score: finalScore,
-            level: level,
+            score: dodgedCount,
+            level: finalLevel,
             time: parseFloat(finalTime),
             coinsEarned: currentRunCoins
         });
@@ -296,9 +296,9 @@ async function showGameOver() {
         console.error("Cloud Sync Failed:", err);
     }
 
+    // 5. SHOW THE POPUP
     document.getElementById("gameOver").classList.remove("hidden");
 }
-
 // --- INPUT HANDLER ---
 document.addEventListener("keydown", (e) => {
     keys[e.code] = true;
