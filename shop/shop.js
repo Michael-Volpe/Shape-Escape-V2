@@ -7,7 +7,7 @@ const convexClient = new convex.ConvexClient("https://famous-skunk-169.convex.cl
 const ALL_SKINS = [
     { id: 's1', name: 'Classic Stripes', class: 'skin-stripes', rarity: 'common', price: 100 },
     { id: 's2', name: 'Polka Dots', class: 'skin-dots', rarity: 'common', price: 100 },
-    { id: 's3', name: 'Grid Lines', class: 'skin-glitch', rarity: 'common', price: 150 },
+    { id: 's3', name: 'Grid Lines', class: 'skin-cyber-pulse', rarity: 'common', price: 150 }, // Updated to visible class
     { id: 's4', name: 'Bricks', class: 'skin-bricks', rarity: 'common', price: 150 },
     { id: 's5', name: 'Checkerboard', class: 'skin-checkered', rarity: 'uncommon', price: 300 },
     { id: 's6', name: 'ZigZag', class: 'skin-zigzag', rarity: 'uncommon', price: 350 },
@@ -17,23 +17,27 @@ const ALL_SKINS = [
     { id: 's10', name: 'Dragon Scales', class: 'skin-ruby', rarity: 'legendary', price: 900 }
 ];
 
-// EXCLUSIVE LIMITED OFFERS (Only appear in the "Offers" tab)
+// EXCLUSIVE LIMITED OFFERS
 const LIMITED_OFFERS = [
     { id: 'off1', name: 'Solar Flare', class: 'skin-solar', rarity: 'legendary', price: 2500 },
     { id: 'off2', name: 'Digital Matrix', class: 'skin-matrix', rarity: 'legendary', price: 3000 },
     { id: 'off3', name: 'Plasma Flow', class: 'skin-plasma', rarity: 'legendary', price: 2800 },
     { id: 'off4', name: 'Cyber Pulse', class: 'skin-cyber-pulse', rarity: 'legendary', price: 3200 },
-    { id: 'off5', name: 'Toxic Hazard', class: 'skin-toxic', rarity: 'rare', price: 1200 }
+    { id: 'off5', name: 'Toxic Hazard', class: 'skin-toxic', rarity: 'rare', price: 1200 },
+    // NEW OFFERS
+    { id: 'off6', name: 'Supernova', class: 'skin-supernova', rarity: 'legendary', price: 5000 },
+    { id: 'off7', name: 'Prism Cycle', class: 'skin-rainbow-cycle', rarity: 'legendary', price: 4500 }
 ];
 
-// EXCLUSIVE LOOT-ONLY SKINS (Only obtainable via Crates)
+// EXCLUSIVE LOOT-ONLY SKINS
 const LOOT_ONLY_SKINS = [
     { id: 'l1', name: 'Carbon Fiber', class: 'skin-carbon', rarity: 'uncommon' },
     { id: 'l2', name: 'Midnight Void', class: 'skin-void', rarity: 'legendary' },
     { id: 'l3', name: 'Nebula Flow', class: 'skin-nebula', rarity: 'legendary' },
     { id: 'l4', name: 'Digital Ghost', class: 'skin-ghost', rarity: 'legendary' },
     { id: 'l5', name: 'Emerald Pulse', class: 'skin-emerald', rarity: 'rare' },
-    { id: 'l6', name: 'Overdrive', class: 'skin-overdrive', rarity: 'rare' }
+    { id: 'l6', name: 'Overdrive', class: 'skin-overdrive', rarity: 'rare' },
+    { id: 'l7', name: 'Zero Kelvin', class: 'skin-frozen', rarity: 'rare' }
 ];
 
 const CRATES = [
@@ -47,7 +51,7 @@ const CRATES = [
     },
     { 
         id: 'c3', name: 'Rare Crate', price: 1000, rarity: 'rare', 
-        weights: { common: 10, uncommon: 25, rare: 55, legendary: 10 } // FIXED: Changed 'rarity' to 'rare'
+        weights: { common: 10, uncommon: 25, rare: 55, legendary: 10 } 
     },
     { 
         id: 'c4', name: 'Legendary Crate', price: 2500, rarity: 'legendary', 
@@ -90,7 +94,7 @@ function switchTab(tabId) {
     
     if(tabId === 'daily' || tabId === 'offers') handleDailyRotation();
 
-    if(window.event && window.event.currentTarget) window.event.currentTarget.classList.add('active');
+    if(event && event.currentTarget) event.currentTarget.classList.add('active');
 }
 
 // --- RENDERING ---
@@ -102,10 +106,12 @@ function renderAllSkins() {
 function renderCrates() {
     const grid = document.getElementById('crates-grid');
     if (!grid) return;
+    
+    // FIXED: Crates now use specific CSS variables for their background colors
     grid.innerHTML = CRATES.map(crate => `
         <div class="shop-item ${crate.rarity} crate-card">
             <span class="item-rarity-tag">${crate.rarity}</span>
-            <div class="item-preview skin-glitch" style="filter: hue-rotate(${crate.price}deg); opacity: 0.8;"></div>
+            <div class="item-preview" style="background: var(--crate-bg-${crate.rarity}, #5d4037); border: 4px solid rgba(0,0,0,0.3);"></div>
             
             <div class="crate-odds-overlay">
                 <div class="odds-title">CHANCES</div>
@@ -208,16 +214,6 @@ function pickRarity(weights) {
     return 'common';
 }
 
-// Helper to get a random skin of a specific rarity with a safety fallback
-function getRandomSkinOfRarity(rarity) {
-    const pool = TOTAL_LOOT_POOL.filter(s => s.rarity === rarity);
-    if (pool.length > 0) {
-        return pool[Math.floor(Math.random() * pool.length)];
-    }
-    // Fallback if rarity pool is empty (prevents crashes)
-    return ALL_SKINS[0];
-}
-
 async function startCrateOpening(crateId) {
     const username = localStorage.getItem('gameUsername');
     if (!username) return alert("Please log in first!");
@@ -229,9 +225,9 @@ async function startCrateOpening(crateId) {
         return alert("Need more coins!");
     }
 
-    // --- PRE-CALCULATE WINNER ---
     const winRarity = pickRarity(crate.weights);
-    const winner = getRandomSkinOfRarity(winRarity);
+    const winSkins = TOTAL_LOOT_POOL.filter(s => s.rarity === winRarity);
+    const winner = winSkins[Math.floor(Math.random() * winSkins.length)];
 
     const overlay = document.getElementById('crate-overlay');
     const spinner = document.getElementById('item-spinner');
@@ -248,7 +244,8 @@ async function startCrateOpening(crateId) {
     
     for (let i = 0; i < totalItems; i++) {
         const rarity = pickRarity(crate.weights);
-        const randSkin = getRandomSkinOfRarity(rarity);
+        const skinsOfRarity = TOTAL_LOOT_POOL.filter(s => s.rarity === rarity);
+        const randSkin = skinsOfRarity[Math.floor(Math.random() * skinsOfRarity.length)];
         
         const div = document.createElement('div');
         div.className = `spinner-item ${randSkin.rarity}`;
@@ -259,8 +256,6 @@ async function startCrateOpening(crateId) {
         spinner.appendChild(div);
     }
     
-    // Set the specific pre-calculated winner in the track at the winning index
-    spinner.children[winningIndex].className = `spinner-item ${winner.rarity}`;
     spinner.children[winningIndex].innerHTML = `
         <div class="item-preview ${winner.class}"></div>
         <div class="spinner-divider" style="position: absolute; right: -1px; width: 2px; height: 100%; background: #222;"></div>
@@ -276,7 +271,6 @@ async function startCrateOpening(crateId) {
         spinner.style.transform = `translateX(-${finalMove}px)`;
     }, 50);
 
-    // --- SAVE TO DATABASE DURING SPIN ---
     try {
         await convexClient.mutation("functions:unlockSkin", {
             username: username,
@@ -291,7 +285,7 @@ async function startCrateOpening(crateId) {
         rewardDisplay.classList.remove('hidden');
         document.getElementById('reward-name').innerText = winner.name;
         document.getElementById('reward-preview').className = `item-preview ${winner.class}`;
-        updateBalance(); 
+        updateBalance();
     }, 6500);
 }
 
@@ -299,6 +293,24 @@ function closeCrate() {
     document.getElementById('crate-overlay').classList.add('hidden');
     document.getElementById('reward-display').classList.add('hidden');
     document.getElementById('item-spinner').style.transform = 'translateX(0)';
+}
+
+// --- NEW: CHARACTER UPDATER ---
+// Call this function when you equip a skin to fix the "not showing up" issue
+function updateCharacterVisuals(playerElementId, skinClass) {
+    const player = document.getElementById(playerElementId);
+    if (!player) return;
+
+    // Remove all existing skin classes
+    const currentClasses = player.className.split(' ');
+    const cleanedClasses = currentClasses.filter(c => !c.startsWith('skin-'));
+    
+    player.className = cleanedClasses.join(' ');
+    player.classList.add(skinClass);
+
+    // Force CSS Override traits for game visibility
+    player.style.backgroundColor = "transparent";
+    player.style.overflow = "visible";
 }
 
 window.onload = initShop;
