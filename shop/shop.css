@@ -108,16 +108,9 @@ body {
     animation: fadeIn 0.4s ease-out;
 }
 
-/* ADJUSTED: padding-top increased to 240px to reveal top row skins */
-#skins-tab {
-    padding-top: 940px;
-}
-#offers-tab {
-    padding-top: 130px;
-}
-#crates-tab {
-    padding-top: 130px;
-}
+#skins-tab { padding-top: 940px; }
+#offers-tab { padding-top: 130px; }
+#crates-tab { padding-top: 130px; }
 
 .section-header {
     display: flex;
@@ -167,11 +160,16 @@ body {
     transform: translateY(-5px);
 }
 
-.shop-item.featured {
-    grid-column: span 2;
-}
+.shop-item.featured { grid-column: span 2; }
 
 /* --- RARITY SYSTEM --- */
+:root {
+    --crate-bg-common: #5d4037;
+    --crate-bg-uncommon: #2e7d32;
+    --crate-bg-rare: #1565c0;
+    --crate-bg-legendary: #6a1b9a;
+}
+
 .item-rarity-tag {
     position: absolute;
     top: 10px;
@@ -187,7 +185,7 @@ body {
 .rare { border-top: 3px solid #00bbff !important; }
 .legendary { border-top: 3px solid #ff44ff !important; }
 
-/* --- SKIN PATTERNS (FIXED CONTRAST) --- */
+/* --- SKIN PATTERNS ENGINE --- */
 .item-preview {
     width: 80px;
     height: 80px;
@@ -198,14 +196,94 @@ body {
     overflow: hidden;
 }
 
-/* CRATE VISUAL ENHANCEMENTS */
-.crate-card .item-preview {
-    background: #5d4037; /* Wooden brown */
-    border: 4px solid #3e2723;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+/* --- THE TOTAL OVERRIDE ENGINE --- */
+/* Target actual player models specifically to avoid breaking crates */
+.user-shape[class*="skin-"], 
+#player1-preview[class*="skin-"], 
+#player2-preview[class*="skin-"],
+.spinner-item [class*="skin-"] {
+    background-color: transparent !important; 
+    overflow: visible !important;
     position: relative;
-    overflow: visible;
+    background-size: cover;
+    z-index: 5;
 }
+
+/* --- REVAMPED SKINS --- */
+
+
+/* --- COMMON SKINS --- */
+.skin-stripes { background: repeating-linear-gradient(45deg, #fff, #fff 10px, #111 10px, #111 20px) !important; border: 2px solid #fff !important; }
+.skin-dots { background: #000 !important; background-image: radial-gradient(#fff 20%, transparent 25%) !important; background-size: 15px 15px !important; box-shadow: inset 0 0 10px rgba(255,255,255,0.2); }
+.skin-bricks { background: #5d2a12 !important; background-image: linear-gradient(90deg, rgba(0,0,0,0.5) 1px, transparent 1px), linear-gradient(rgba(0,0,0,0.5) 1px, transparent 1px) !important; background-size: 20px 10px !important; border: 1px solid #000 !important; }
+.skin-grid { background: #000 !important; background-image: linear-gradient(#00ff88 1px, transparent 1px), linear-gradient(90deg, #00ff88 1px, transparent 1px) !important; background-size: 15px 15px !important; }
+.skin-blueprint { background: #0044aa !important; background-image: linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px) !important; background-size: 10px 10px !important; border: 1px solid #fff !important; }
+.skin-camo { background: #4b5320 !important; background-image: radial-gradient(#2b3010 40%, transparent 45%), radial-gradient(#6b7340 35%, transparent 40%) !important; background-position: 0 0, 15px 15px !important; background-size: 30px 30px !important; }
+
+/* --- UNCOMMON SKINS --- */
+.skin-checkered { background: #fff !important; background-image: linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%, #111), linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%, #111) !important; background-size: 20px 20px !important; background-position: 0 0, 10px 10px !important; }
+.skin-zigzag { background: #000 !important; background-image: linear-gradient(135deg, #ff0055 25%, transparent 25%), linear-gradient(225deg, #ff0055 25%, transparent 25%) !important; background-size: 20px 20px !important; border: 1px solid #ff0055 !important; }
+.skin-hex { background: #111 !important; background-image: linear-gradient(30deg, #444 12%, transparent 12.5%, transparent 87%, #444 87.5%, #444), linear-gradient(150deg, #444 12%, transparent 12.5%, transparent 87%, #444 87.5%, #444) !important; background-size: 20px 35px !important; box-shadow: inset 0 0 10px #000; }
+.skin-carbon { background: #111 !important; background-image: linear-gradient(45deg, #222 25%, transparent 25.5%, transparent 75%, #222 75.5%) !important; background-size: 10px 10px !important; border: 1px solid #333 !important; }
+.skin-hazard { background: #ffcc00 !important; background-image: repeating-linear-gradient(-45deg, #000, #000 10px, transparent 10px, transparent 20px) !important; border: 2px solid #000 !important; }
+
+/* --- RARE SKINS --- */
+.skin-waves { background: #000 !important; background-image: repeating-radial-gradient(circle at 0% 50%, transparent, transparent 10px, #00bbff 10px, #00bbff 14px) !important; box-shadow: 0 0 15px #00bbff, inset 0 0 20px #00bbff !important; }
+.skin-circuit { background: #000 !important; background-image: linear-gradient(rgba(0, 255, 136, 1) 2px, transparent 2px), linear-gradient(90deg, rgba(0, 255, 136, 1) 2px, transparent 2px) !important; background-size: 15px 15px !important; box-shadow: 0 0 20px #00ff88, inset 0 0 15px #00ff88 !important; }
+.skin-toxic { background: #ccff00 !important; background-image: repeating-linear-gradient(45deg, #000 0, #000 10px, transparent 10px, transparent 20px) !important; box-shadow: 0 0 15px #ccff00, inset 0 0 20px #000 !important; }
+.skin-ruby { background: linear-gradient(135deg, #ff0000 0%, #400000 100%) !important; box-shadow: 0 0 20px #ff0000, inset 0 0 25px #ff4444 !important; }
+.skin-lava-static { background: radial-gradient(circle at center, #ffea00, #ff4500, #440000) !important; box-shadow: 0 0 20px #ff4500, inset 0 0 30px #ff0000 !important; }
+.skin-glitch-static { background: #222 !important; background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.05), rgba(255,255,255,0.05) 1px, transparent 1px, transparent 2px) !important; animation: staticFlicker 0.2s infinite; }
+.skin-gold-leaf { background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c) !important; box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
+
+/* --- LEGENDARY SKINS --- */
+.skin-matrix { background: #000 !important; background-image: linear-gradient(0deg, transparent 0, #00ff46 50%, transparent 100%) !important; background-size: 100% 15px !important; animation: matrixScroll 0.3s linear infinite !important; box-shadow: 0 0 25px #00ff46, inset 0 0 25px #00ff46 !important; }
+.skin-solar { background: radial-gradient(circle, #fff, #ffeb3b, #ff5722) !important; animation: solarPulse 1s ease-in-out infinite !important; box-shadow: 0 0 40px #ff5722, inset 0 0 20px #fff !important; }
+.skin-void { background: #000 !important; background-image: radial-gradient(circle at center, #7b61ff 0%, #000 80%) !important; animation: voidGlow 1.5s infinite alternate !important; box-shadow: 0 0 30px #7b61ff, inset 0 0 40px #7b61ff !important; }
+.skin-plasma { background: linear-gradient(-45deg, #ff00cc, #3333ff, #00ffff, #ff00cc) !important; background-size: 300% 300% !important; animation: plasmaShift 2s ease infinite !important; filter: saturate(2) brightness(1.4) !important; box-shadow: 0 0 30px rgba(255, 0, 204, 0.6) !important; }
+.skin-cyber-pulse { background-color: #000 !important; background-image: linear-gradient(transparent 50%, #00ffff 50%) !important; background-size: 100% 40px !important; animation: scanLine 0.8s linear infinite !important; box-shadow: 0 0 25px #00ffff, inset 0 0 20px #00ffff !important; }
+.skin-nebula { background: radial-gradient(circle, #6a11cb, #2575fc, #000) !important; background-size: 200% 200% !important; animation: nebulaMove 3s ease infinite !important; box-shadow: 0 0 35px #2575fc !important; }
+.skin-ghost { background: #fff !important; animation: ghostFlicker 0.1s steps(2) infinite !important; box-shadow: 0 0 40px #00ffff !important; }
+.skin-emerald { background: #000 !important; background-image: radial-gradient(#00ff88 4px, transparent 4px) !important; background-size: 20px 20px !important; animation: emeraldPulse 1s ease-in-out infinite !important; box-shadow: 0 0 20px #00ff88 !important; }
+.skin-overdrive { background: linear-gradient(90deg, #ff00ff, #222 50%, #ff00ff) !important; background-size: 200% 100% !important; animation: overdriveSpeed 0.2s linear infinite !important; box-shadow: 0 0 30px #ff00ff !important; }
+.skin-supernova { background: #fff !important; box-shadow: 0 0 80px #fff, 0 0 150px #ffea00 !important; animation: solarPulse 0.5s infinite !important; }
+.skin-frozen { background: #00ffff !important; background-image: radial-gradient(circle, #fff 10%, #0066ff 90%) !important; box-shadow: 0 0 35px #00ffff, inset 0 0 20px #fff !important; animation: emeraldPulse 2s infinite !important; }
+.skin-rainbow-cycle { background: #ff0000 !important; animation: hueShift 2s linear infinite !important; box-shadow: 0 0 40px currentColor, inset 0 0 25px rgba(255,255,255,0.7) !important; }
+
+/* MYTHIC SKINS (NEW) */
+.skin-neural { background: #000 !important; background-image: radial-gradient(circle at 50% 50%, #00f2ff 2px, transparent 3px) !important; animation: neuralZap 0.5s steps(4) infinite !important; box-shadow: 0 0 30px #00f2ff, inset 0 0 15px #00f2ff !important; }
+.skin-black-hole { background: radial-gradient(circle, #000 20%, #4b0082 80%) !important; animation: eventHorizon 2s linear infinite !important; box-shadow: 0 0 40px #4b0082, inset 0 0 30px #000 !important; }
+.skin-glitch-overlord { background: #111 !important; animation: overlordShift 0.15s infinite !important; box-shadow: 5px 0 #ff0055, -5px 0 #00ffff !important; }
+
+/* --- ANIMATION ENGINE --- */
+@keyframes matrixScroll { from { background-position: 0 0; } to { background-position: 0 30px; } }
+@keyframes solarPulse { 0%, 100% { transform: scale(1); filter: brightness(1.2); } 50% { transform: scale(1.1); filter: brightness(2.5); } }
+@keyframes voidGlow { from { box-shadow: 0 0 10px #7b61ff; } to { box-shadow: 0 0 60px #7b61ff, inset 0 0 50px #7b61ff; } }
+@keyframes plasmaShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+@keyframes scanLine { from { background-position: 0 0; } to { background-position: 0 40px; } }
+@keyframes nebulaMove { 0%, 100% { background-position: 0% 0%; } 50% { background-position: 100% 100%; } }
+@keyframes ghostFlicker { 0% { opacity: 1; filter: invert(0); transform: skewX(0deg); } 50% { opacity: 0.6; filter: invert(1); transform: skewX(8deg); } }
+@keyframes emeraldPulse { 0%, 100% { filter: brightness(1); box-shadow: 0 0 20px #00ff88; } 50% { filter: brightness(2.8); box-shadow: 0 0 50px #00ff88; } }
+@keyframes overdriveSpeed { from { background-position: 0 0; } to { background-position: 40px 0; } }
+@keyframes hueShift { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }
+@keyframes staticFlicker { 0% { opacity: 0.8; } 50% { opacity: 1; transform: scale(1.02); } 100% { opacity: 0.9; } }
+@keyframes neuralZap { from { filter: hue-rotate(0deg) contrast(1.5); } to { filter: hue-rotate(180deg) contrast(2.5); } }
+@keyframes eventHorizon { from { transform: rotate(0deg) scale(1); } to { transform: rotate(360deg) scale(1.15); } }
+@keyframes overlordShift { 0% { transform: translate(2px, -1px); filter: contrast(1.5); } 50% { transform: translate(-2px, 2px); filter: hue-rotate(45deg); } 100% { transform: translate(1px, -2px); } }
+/* END OF SKINS */
+
+/* --- CRATE VISUALS (RESTORED) --- */
+.crate-card .item-preview {
+    border: 4px solid #3e2723 !important;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.5) !important;
+    position: relative;
+    overflow: visible !important;
+}
+
+.crate-card.common .item-preview { background-color: var(--crate-bg-common) !important; box-shadow: 0 0 10px #333 !important; }
+.crate-card.uncommon .item-preview { background-color: var(--crate-bg-uncommon) !important; box-shadow: 0 0 15px #00ff88 !important; }
+.crate-card.rare .item-preview { background-color: var(--crate-bg-rare) !important; box-shadow: 0 0 15px #00bbff !important; }
+.crate-card.legendary .item-preview { background-color: var(--crate-bg-legendary) !important; box-shadow: 0 0 20px #ff44ff !important; }
 
 /* Crate Planks */
 .crate-card .item-preview::before,
@@ -216,265 +294,11 @@ body {
     left: -10%;
     width: 120%;
     height: 6px;
-    background: #4e342e;
+    background: rgba(0,0,0,0.3);
     z-index: 1;
 }
 .crate-card .item-preview::before { transform: rotate(45deg); }
 .crate-card .item-preview::after { transform: rotate(-45deg); }
-
-/* SKINS */
-/* --- COMMON: Simple, Static, Gray --- */
-/* These are strictly flat and low-detail */
-.skin-stripes { 
-    background: repeating-linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.1) 10px, transparent 10px, transparent 20px); 
-}
-
-.skin-dots { 
-    background-image: radial-gradient(rgba(255,255,255,0.2) 15%, transparent 15%); 
-    background-size: 14px 14px; 
-}
-
-.skin-bricks {
-    background-image: linear-gradient(335deg, #222 5px, transparent 5px),
-                      linear-gradient(155deg, #222 5px, transparent 5px),
-                      linear-gradient(335deg, #222 5px, transparent 5px),
-                      linear-gradient(155deg, #222 5px, transparent 5px);
-    background-size: 20px 20px;
-    background-position: 0 0, 2px 5px, 10px 10px, 12px 15px;
-}
-
-/* --- UNCOMMON: Defined Geometry (Static, Solid Colors) --- */
-.skin-checkered { 
-    background-image: conic-gradient(#333 90deg, #444 90deg 180deg, #333 180deg 270deg, #444 270deg); 
-    background-size: 20px 20px; 
-}
-
-.skin-zigzag {
-    background: linear-gradient(135deg, #444 25%, transparent 25%) -10px 0,
-                linear-gradient(225deg, #444 25%, transparent 25%) -10px 0,
-                linear-gradient(315deg, #444 25%, transparent 25%),
-                linear-gradient(45deg, #444 25%, transparent 25%);
-    background-size: 20px 20px;
-    background-color: #222;
-}
-
-/* --- RARE: High-Contrast & Neon Glow (Static) --- */
-.skin-waves { 
-    background: radial-gradient(circle at 100% 50%, transparent 20%, #00bbff 21%, #00bbff 34%, transparent 35%); 
-    background-size: 15px 30px;
-    box-shadow: inset 0 0 15px #00bbff;
-}
-
-.skin-circuit {
-    background: #0a0a0a;
-    background-image: 
-        linear-gradient(rgba(0, 255, 136, 0.4) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 255, 136, 0.4) 1px, transparent 1px);
-    background-size: 20px 20px;
-    box-shadow: inset 0 0 15px #00ff88;
-}
-
-.skin-lava-static {
-    background: radial-gradient(circle at center, #ff4500, #8b0000);
-    box-shadow: inset 0 0 20px #ff0000;
-}
-
-/* --- LEGENDARY: Animated & Complex Effects --- */
-
-/* Digital Matrix - Vertical movement */
-.skin-matrix {
-    background: linear-gradient(rgba(0, 255, 70, 0.1), rgba(0, 255, 70, 0.1)),
-                repeating-linear-gradient(0deg, transparent 0, transparent 2px, #00ff46 2px, #00ff46 4px);
-    background-size: 100% 8px;
-    animation: matrixScroll 0.8s linear infinite;
-}
-
-/* Solar Flare - Pulsing Heat Map */
-.skin-solar {
-    background: radial-gradient(circle, #ffeb3b, #ff5722, #3e2723);
-    background-size: 200% 200%;
-    animation: solarPulse 2s ease-in-out infinite;
-    box-shadow: inset 0 0 30px #ff5722, 0 0 20px rgba(255, 87, 34, 0.4);
-}
-
-/* Void Shimmer - Deep Space with depth */
-.skin-void {
-    background: #000;
-    background-image: 
-        radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0)),
-        radial-gradient(3px 3px at 50px 10px, #7b61ff, rgba(0,0,0,0));
-    animation: voidGlow 3s infinite alternate;
-}
-
-/* Plasma - Shifting Liquid Colors */
-.skin-plasma {
-    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-    background-size: 400% 400%;
-    animation: plasmaShift 5s ease infinite;
-    box-shadow: inset 0 0 25px rgba(255,255,255,0.2);
-}
-
-/* Cyber Pulse - Glowing lines that scan */
-.skin-cyber-pulse {
-    background-color: #050505;
-    background-image: linear-gradient(transparent 50%, rgba(0, 255, 255, 0.2) 50%),
-                      linear-gradient(90deg, transparent 50%, rgba(0, 255, 255, 0.2) 50%);
-    background-size: 30px 30px;
-    position: relative;
-    overflow: hidden;
-    animation: scanLine 2s linear infinite;
-}
-
-/* --- ANIMATION ENGINE --- */
-@keyframes matrixScroll { from { background-position: 0 0; } to { background-position: 0 40px; } }
-@keyframes solarPulse { 0%, 100% { transform: scale(1); filter: contrast(1.1); } 50% { transform: scale(1.1); filter: contrast(1.5); } }
-@keyframes voidGlow { from { box-shadow: inset 0 0 10px #7b61ff; } to { box-shadow: inset 0 0 40px #7b61ff; } }
-@keyframes plasmaShift { 
-    0% { background-position: 0% 50%; } 
-    50% { background-position: 100% 50%; } 
-    100% { background-position: 0% 50%; } 
-}
-@keyframes scanLine {
-    0% { background-position: 0 0; border-top: 2px solid #00ffff; }
-    50% { border-top: 2px solid transparent; }
-    100% { background-position: 0 60px; border-bottom: 2px solid #00ffff; }
-}
-
-.skin-hex {
-    background: #111;
-    background-image: 
-        linear-gradient(30deg, #222 12%, transparent 12.5%, transparent 87%, #222 87.5%, #222),
-        linear-gradient(150deg, #222 12%, transparent 12.5%, transparent 87%, #222 87.5%, #222),
-        linear-gradient(30deg, #222 12%, transparent 12.5%, transparent 87%, #222 87.5%, #222),
-        linear-gradient(150deg, #222 12%, transparent 12.5%, transparent 87%, #222 87.5%, #222),
-        linear-gradient(60deg, #333 25%, transparent 25.5%, transparent 75%, #333 75%, #333),
-        linear-gradient(60deg, #333 25%, transparent 25.5%, transparent 75%, #333 75%, #333);
-    background-size: 20px 35px;
-}
-
-/* --- RARE: Kinetic Neon (Static High-Contrast) --- */
-
-/* Bio-Hazard - Toxic neon warning pattern */
-.skin-toxic {
-    background: #000;
-    background-image: repeating-linear-gradient(transparent, transparent 10px, #ccff00 10px, #ccff00 11px),
-                      repeating-linear-gradient(90deg, transparent, transparent 10px, #ccff00 10px, #ccff00 11px);
-    box-shadow: inset 0 0 20px #ccff00;
-}
-
-/* Ruby Crystal - Geometric red facets */
-.skin-ruby {
-    background: linear-gradient(135deg, #700000 0%, #ff0000 50%, #700000 100%);
-    background-size: 20px 20px;
-    box-shadow: inset 0 0 15px #ff4444;
-}
-
-/* --- LEGENDARY: Reality-Bending (Animated) --- */
-
-/* Nebula Flow - Gaseous cosmic shifting */
-.skin-nebula {
-    background: radial-gradient(circle at center, #6a11cb 0%, #2575fc 100%);
-    background-size: 200% 200%;
-    animation: nebulaMove 4s ease infinite;
-    filter: hue-rotate(45deg);
-}
-
-/* Digital Ghost - Rapid flickering glitch blocks */
-.skin-ghost {
-    background: #111;
-    background-image: repeating-linear-gradient(45deg, #00ffff 0, #00ffff 1px, transparent 0, transparent 50%);
-    background-size: 10px 10px;
-    animation: ghostFlicker 0.15s steps(2) infinite;
-    box-shadow: 0 0 10px #00ffff;
-}
-
-/* Emerald Pulse - Bioluminescent tech veins */
-.skin-emerald {
-    background-color: #000;
-    background-image: radial-gradient(#00ff88 1px, transparent 1px);
-    background-size: 15px 15px;
-    animation: emeraldPulse 2s ease-in-out infinite;
-}
-
-/* Overdrive - Speeding light streaks */
-.skin-overdrive {
-    background: linear-gradient(90deg, transparent 50%, #ff00ff 50%);
-    background-size: 20px 100%;
-    animation: overdriveSpeed 0.4s linear infinite;
-    box-shadow: inset 0 0 20px #ff00ff;
-}
-
-/* --- ADDITIONAL ANIMATIONS --- */
-@keyframes nebulaMove {
-    0%, 100% { background-position: 0% 0%; }
-    50% { background-position: 100% 100%; }
-}
-
-@keyframes ghostFlicker {
-    0% { opacity: 1; transform: skewX(0deg); }
-    50% { opacity: 0.7; transform: skewX(10deg); }
-}
-
-@keyframes emeraldPulse {
-    0%, 100% { box-shadow: inset 0 0 5px #00ff88; filter: brightness(1); }
-    50% { box-shadow: inset 0 0 25px #00ff88; filter: brightness(1.8); }
-}
-
-@keyframes overdriveSpeed {
-    from { background-position: 0 0; }
-    to { background-position: 40px 0; }
-}
-
-
-/* END OF SKINS */
-
-.skin-glitch { 
-    background: repeating-linear-gradient(0deg, rgba(255,255,255,0.2) 0px, rgba(255,255,255,0.2) 1px, transparent 1px, transparent 4px); 
-}
-
-/* --- CRATE ODDS OVERLAY (FIXED HOVER) --- */
-.crate-odds-overlay {
-    position: absolute;
-    top: 10px; 
-    left: 50%;
-    transform: translateX(-50%) translateY(10px);
-    width: 130px;
-    background: rgba(5, 5, 5, 0.98);
-    backdrop-filter: blur(5px);
-    border: 1px solid #333;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 15px;
-    opacity: 0;
-    transition: 0.3s ease;
-    z-index: 10;
-    pointer-events: none; 
-}
-
-/* Trigger only when hovering over the crate image */
-.crate-card .item-preview:hover + .crate-odds-overlay {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
-
-.odds-title {
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: #00ff88;
-    margin-bottom: 8px;
-    border-bottom: 1px solid #222;
-    padding-bottom: 5px;
-}
-
-.odds-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 10px;
-    margin: 3px 0;
-}
-
-.odds-row span:last-child { font-weight: bold; }
 
 /* --- UI ELEMENTS --- */
 .item-name {
@@ -504,6 +328,49 @@ body {
     background: #00ff88;
     color: #000;
 }
+
+/* --- CRATE ODDS OVERLAY --- */
+.crate-odds-overlay {
+    position: absolute;
+    top: 10px; 
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    width: 130px;
+    background: rgba(5, 5, 5, 0.98);
+    backdrop-filter: blur(5px);
+    border: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 15px;
+    opacity: 0;
+    transition: 0.3s ease;
+    z-index: 10;
+    pointer-events: none; 
+}
+
+.crate-card .item-preview:hover + .crate-odds-overlay {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.odds-title {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #00ff88;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 5px;
+}
+
+.odds-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    margin: 3px 0;
+}
+
+.odds-row span:last-child { font-weight: bold; }
 
 /* --- CRATE OVERLAY & SPINNER --- */
 #crate-overlay {
