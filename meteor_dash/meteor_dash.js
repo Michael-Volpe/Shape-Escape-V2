@@ -251,26 +251,24 @@ function updateMeteors() {
     }
 }
 
-// --- FIXED GAME OVER & CONVEX SYNC ---
-// --- FINAL BULLETPROOF GAME OVER ---
-// --- FINAL BULLETPROOF GAME OVER ---
+// --- FINAL FIXED GAME OVER & CONVEX SYNC ---
 async function showGameOver() {
     if (!gameRunning) return; 
     gameRunning = false;
     cancelAnimationFrame(animationId);
     
-    // 1. CAPTURE DATA RIGHT NOW
+    // 1. CAPTURE DATA
     const dodgedCount = p1.score; 
     const finalTime = timerElement.innerText; 
     const finalLevel = level;
     const user = localStorage.getItem("gameUsername") || "Guest";
 
-    // 2. UI UPDATES - MATCHING THE NEW HTML IDs
+    // 2. UI UPDATES
     const dodgedEl = document.getElementById("finalP1");
     if (dodgedEl) dodgedEl.innerText = dodgedCount;
     
     const timeEl = document.getElementById("finalTime");
-    if (timeEl) timeEl.innerText = finalTime; // HTML already provides the 's'
+    if (timeEl) timeEl.innerText = finalTime;
     
     const coinsEl = document.getElementById("coinsEarned"); 
     if (coinsEl) coinsEl.innerText = currentRunCoins;
@@ -282,23 +280,24 @@ async function showGameOver() {
     const totalBank = parseInt(localStorage.getItem("totalCoins")) || 0;
     localStorage.setItem("totalCoins", totalBank + currentRunCoins);
 
-    // 4. CONVEX CLOUD SYNC
+    // 4. CONVEX CLOUD SYNC - Points to the specific Meteor Dash mutation
     try {
-        await convexClient.mutation("functions:addmd_score", {
+        await convexClient.mutation("functions:addMdScore", {
             name: user,
             score: dodgedCount,
             level: finalLevel,
             time: parseFloat(finalTime),
             coinsEarned: currentRunCoins
         });
-        console.log("Stats synced to Cloud successfully!");
+        console.log("Meteor Dash stats synced successfully!");
     } catch (err) {
         console.error("Cloud Sync Failed:", err);
     }
 
-    // 5. SHOW THE POPUP
+    // 5. SHOW POPUP
     document.getElementById("gameOver").classList.remove("hidden");
 }
+
 // --- INPUT HANDLER ---
 document.addEventListener("keydown", (e) => {
     keys[e.code] = true;
@@ -323,4 +322,3 @@ document.addEventListener("keydown", (e) => {
 });
 
 document.addEventListener("keyup", (e) => { keys[e.code] = false; });
-
