@@ -284,7 +284,7 @@ async function showGameOver() {
 
     // 4. CONVEX CLOUD SYNC
     try {
-        await convexClient.mutation("functions:addScore", {
+        await convexClient.mutation("functions:addmd_score", {
             name: user,
             score: dodgedCount,
             level: finalLevel,
@@ -323,3 +323,4 @@ document.addEventListener("keydown", (e) => {
 });
 
 document.addEventListener("keyup", (e) => { keys[e.code] = false; });
+
