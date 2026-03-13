@@ -9,23 +9,22 @@
 <body>
     <div id="game-container">
         <div id="menu">
-            <h1>HALL OF FAME</h1>
-            <p>Top 100 Leaderboard</p>
+            <div class="header-nav">
+                <div class="nav-arrow left" onclick="switchLeaderboard(-1)">&#10094;</div>
+                <div class="title-group">
+                    <h1 id="boardTitle">HALL OF FAME</h1>
+                    <p id="boardSub">Top 100 Leaderboard</p>
+                </div>
+                <div class="nav-arrow right" onclick="switchLeaderboard(1)">&#10095;</div>
+            </div>
             
             <div class="glass leaderboard-wrapper">
                 <table id="leaderboardTable">
                     <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>NAME</th>
-                            <th>SCORE</th>
-                            <th>LVL</th>
-                            <th>TIME</th>
-                            <th>DATE</th>
-                        </tr>
+                        <tr id="tableHeaderRow">
+                            </tr>
                     </thead>
-                    <tbody id="leaderboardBody">
-                        </tbody>
+                    <tbody id="leaderboardBody"></tbody>
                 </table>
             </div>
 
