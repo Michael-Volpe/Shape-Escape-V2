@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meteor Dash - Shape Escape</title>
+    <link rel="stylesheet" href="../style.css"> 
+    <link rel="stylesheet" href="meteor_dash.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="ui-layer">
+            <div class="hud-top">
+                <div class="stat-group">
+                    <div class="stat-label">SCORE</div>
+                    <div id="scoreValueP1" class="stat-value">0</div>
+                </div>
+                <div class="stat-group">
+                    <div class="stat-label">LEVEL</div>
+                    <div id="levelValue" class="stat-value">1</div>
+                </div>
+                <div class="stat-group">
+                    <div class="stat-label">TIME</div>
+                    <div id="timerValue" class="stat-value">0.00</div>
+                </div>
+                <div class="stat-group">
+                    <div class="stat-label">COINS</div>
+                    <div id="totalCoins" class="stat-value">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="game">
+            <div id="character" class="player"></div>
+            <div id="ground"></div>
+            <div id="particle-container"></div>
+        </div>
+
+        <div id="pauseOverlay" class="hidden overlay">
+            <div class="pause-icon">
+                <div class="pause-bar"></div>
+                <div class="pause-bar"></div>
+            </div>
+            <div class="game-over-box" style="background: transparent; border: none; box-shadow: none;">
+                <h1 class="glitch" style="font-size: 32px; margin-top: 0;">PAUSED</h1>
+                <div class="button-stack">
+                    <button class="menu-btn" onclick="togglePause()">RESUME</button>
+                    <button class="menu-btn" onclick="window.location.href='../gamemodes/gamemodes.html'">QUIT</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="gameOver" class="hidden overlay">
+            <div class="game-over-box">
+                <h1 class="glitch">GAME OVER</h1>
+                
+                <div class="stats-summary">
+                    <div class="stat-item">
+                        <div class="stat-icon">☄️</div>
+                        <div class="stat-item-label">DODGED</div>
+                        <div id="finalScore" class="stat-item-value">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-item-label">SURVIVED</div>
+                        <div class="stat-item-value"><span id="finalTime">0.00</span>s</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">🪙</div>
+                        <div class="stat-item-label">COINS</div>
+                        <div id="coinsEarnedDisplay" class="stat-item-value">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">🚀</div>
+                        <div class="stat-item-label">LEVEL</div>
+                        <div id="finalLevel" class="stat-item-value">1</div>
+                    </div>
+                </div>
+
+                <div class="button-stack">
+                    <button class="menu-btn" onclick="location.reload()">RETRY</button>
+                    <button class="menu-btn" onclick="window.location.href='../gamemodes/gamemodes.html'">MODES</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/convex@1.9.0/dist/browser.bundle.js"></script>
+    <script src="meteor_dash.js"></script>
+</body>
+</html>

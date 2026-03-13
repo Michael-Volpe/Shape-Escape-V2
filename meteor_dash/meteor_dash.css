@@ -1,0 +1,271 @@
+/* --- METEOR DASH CORE --- */
+#game-container {
+    position: relative;
+    width: 500px;
+    height: 600px;
+    margin: 0 auto;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    background: #000;
+    user-select: none;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+#game {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border: 3px solid #331100;
+    box-shadow: inset 0 0 120px rgba(0,0,0,0.9);
+    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    z-index: 5;
+}
+
+/* --- ATMOSPHERIC PARTICLE LAYER --- */
+#game::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.5;
+    transition: all 1.5s ease;
+}
+
+/* --- SCENIC THEMES --- */
+.theme-forest { background: linear-gradient(to bottom, #051a08 0%, #000 100%); border-color: #104410 !important; }
+.theme-forest::before { background-image: radial-gradient(circle at 50% 50%, #2eff2e 1px, transparent 1px); background-size: 50px 50px; animation: atmosphericDrift 15s infinite linear; }
+.theme-forest #ground { border-top-color: #2eff2e; box-shadow: 0 -10px 30px rgba(46, 255, 46, 0.4); }
+.theme-forest .stat-label { color: #2eff2e; }
+
+.theme-desert { background: linear-gradient(to bottom, #1a0800 0%, #080301 70%, #000 100%); border-color: #441100 !important; }
+.theme-desert::before { background-image: radial-gradient(circle at 20% 80%, #ff4400 2px, transparent 2px); background-size: 80px 80px; animation: atmosphericDrift 8s infinite reverse linear; }
+.theme-desert #ground { border-top-color: #ff4400; box-shadow: 0 -10px 45px rgba(255, 68, 0, 0.5); }
+.theme-desert .stat-label { color: #ff4400; }
+
+.theme-ocean { background: linear-gradient(to bottom, #001133 0%, #00051a 80%, #000 100%); border-color: #002266 !important; }
+.theme-ocean::before { background-image: radial-gradient(circle, rgba(0, 204, 255, 0.2) 1px, transparent 1px); background-size: 30px 60px; animation: oceanRise 10s infinite ease-in-out; }
+.theme-ocean #ground { border-top-color: #00ccff; box-shadow: 0 -10px 40px rgba(0, 204, 255, 0.4); }
+.theme-ocean .stat-label { color: #00ccff; }
+
+.theme-ice { background: linear-gradient(to bottom, #112a40 0%, #081220 70%, #000 100%); border-color: #4080aa !important; }
+.theme-ice::before { background-image: radial-gradient(circle, #fff 1px, transparent 1px); background-size: 40px 40px; animation: atmosphericDrift 4s infinite linear; filter: blur(1px); }
+.theme-ice #ground { border-top-color: #b0e0ff; box-shadow: 0 -10px 40px rgba(176, 224, 255, 0.4); }
+.theme-ice .stat-label { color: #b0e0ff; }
+
+.theme-neon { background: #050005; border-color: #ff00ff !important; }
+.theme-neon::before { background-image: linear-gradient(rgba(255, 0, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 0, 255, 0.1) 1px, transparent 1px); background-size: 40px 40px; transform: perspective(500px) rotateX(45deg); opacity: 0.3; }
+.theme-neon #ground { border-top-color: #ff00ff; box-shadow: 0 -10px 40px rgba(255, 0, 255, 0.6); }
+.theme-neon .stat-label { color: #ff00ff; }
+
+.theme-void { background: radial-gradient(circle at center, #0a001a 0%, #000 100%); border-color: #330066 !important; }
+.theme-void::before { background: radial-gradient(circle at center, #6600ff 0%, transparent 60%); mix-blend-mode: screen; animation: voidPulse 4s infinite alternate; }
+.theme-void #ground { border-top-color: #9900ff; box-shadow: 0 -10px 50px rgba(153, 0, 255, 0.7); }
+.theme-void .stat-label { color: #9900ff; }
+
+/* --- HUD & TOP SCREEN --- */
+#ui-layer {
+    position: absolute;
+    top: 0; left: 0; width: 100%;
+    z-index: 100;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hud-top {
+    display: flex;
+    gap: 35px;
+    background: rgba(10, 10, 10, 0.85);
+    padding: 14px 45px;
+    border-radius: 0 0 24px 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: none;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.8);
+}
+
+.stat-group { text-align: center; min-width: 65px; }
+.stat-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; font-weight: 800; transition: color 1.5s; }
+.stat-value { font-size: 24px; color: #fff; font-variant-numeric: tabular-nums; font-weight: 900; text-shadow: 0 0 15px rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; gap: 6px; }
+.stat-group:last-child .stat-value::before { content: '●'; color: #ffcc00; font-size: 14px; animation: coinSpin 2s infinite linear; }
+
+/* --- THE GROUND --- */
+#ground {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 48px;
+    background: linear-gradient(to bottom, #111, #000);
+    border-top: 4px solid #fff;
+    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 6;
+}
+
+/* --- PLAYERS & METEORS --- */
+.player {
+    position: absolute;
+    width: 22px; height: 22px;
+    background-color: #fff;
+    transition: transform 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.2), filter 0.3s;
+    box-shadow: 0 0 15px rgba(255,255,255,0.3);
+    z-index: 10;
+}
+.player.crouching { transform: scaleY(0.55) translateY(25%); }
+
+.meteor {
+    position: absolute;
+    width: 22px; height: 22px;
+    background: radial-gradient(circle at 35% 35%, #fff, #ffaa00 40%, #ff4400 90%);
+    border-radius: 50%;
+    box-shadow: 0 0 25px rgba(255, 68, 0, 0.8);
+    z-index: 10;
+}
+.meteor::after {
+    content: '';
+    position: absolute;
+    top: -85px; left: 50%; width: 10px; height: 110px;
+    background: linear-gradient(to top, rgba(255, 170, 0, 0.8), transparent);
+    transform: translateX(-50%);
+    filter: blur(4px);
+}
+
+/* --- OVERLAYS --- */
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex; 
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;
+    z-index: 500;
+}
+
+#pauseOverlay {
+    z-index: 501;
+}
+
+.game-over-box {
+    background: rgba(10, 10, 10, 0.98);
+    padding: 25px 35px; /* Reduced vertical padding */
+    border: 1px solid #333;
+    border-radius: 24px;
+    text-align: center;
+    width: 320px; /* Slightly narrower */
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+}
+
+.glitch { 
+    font-size: 36px; /* Scaled down title */
+    color: #fff; 
+    letter-spacing: 4px; 
+    font-weight: 900;
+    text-transform: uppercase;
+    text-shadow: 2px 2px #ff4400, 4px 4px rgba(255, 68, 0, 0.2); 
+    margin-bottom: 20px; 
+}
+
+/* Stats Display Styling */
+.stats-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px; /* Reduced gap */
+    margin-bottom: 25px; /* Reduced margin */
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 0;
+}
+
+.stat-icon {
+    font-size: 20px; /* Scaled down icon */
+    margin-bottom: 4px;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+    line-height: 1;
+}
+
+.stat-item-label {
+    font-size: 8px; /* Sharper, smaller text */
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+.stat-item-value {
+    font-size: 18px; /* Slightly smaller values */
+    font-weight: 900;
+    color: #fff;
+}
+
+/* Pause Icon Styling */
+.pause-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    animation: pausePulse 1.5s infinite;
+}
+
+.pause-bar {
+    width: 12px;
+    height: 80%; /* Shorter bars */
+    background: #fff;
+    border-radius: 3px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+.button-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.menu-btn {
+    width: 100%; 
+    padding: 12px; /* Slimmer buttons */
+    background: transparent; 
+    border: 1px solid #444; 
+    color: #fff;
+    font-size: 13px;
+    font-weight: 900; 
+    cursor: pointer; 
+    text-transform: uppercase; 
+    border-radius: 8px;
+    letter-spacing: 2px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-btn:hover { 
+    background: #fff; 
+    color: #000; 
+    border-color: #fff;
+    transform: translateY(-2px); 
+}
+
+.hidden { display: none !important; }
+
+/* --- ANIMATIONS --- */
+@keyframes atmosphericDrift { from { background-position: 0 0; } to { background-position: 0 600px; } }
+@keyframes oceanRise { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+@keyframes voidPulse { from { opacity: 0.2; transform: scale(1); } to { opacity: 0.5; transform: scale(1.1); } }
+@keyframes coinSpin { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+@keyframes flashEffect { 0% { filter: brightness(4); } 100% { filter: brightness(1); } }
+@keyframes pausePulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.8; } }
+
+.level-up-flash { animation: flashEffect 0.6s ease-out; }
